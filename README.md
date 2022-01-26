@@ -33,22 +33,20 @@ The information that would be needed to develop the series of contracts are to i
 Last Will and Testament:
 
 
-
 * Chosen confidant(s) who will be tasked with the implementation and execution of the user’s instructions
 * Comprehensive List of Assets, including
     * Cryptocurrency Wallets
     * NFT’s 
     * Bank Accounts
     * Investment accounts
-* Health Care Power of Attorney (POA)
-    * Advanced Medical Directive
-    * Life-savings measures intentions
 * Comprehensive List of Beneficiaries
     * Instructions for Beneficiaries to establish accounts required to inherit their assets (Wallets that would need to be created to receive their inheritance, for example)
 * Asset Disposition Instructions (which beneficiaries are to be awarded which specific assets)
+* Health Care Power of Attorney (POA) (Optional)
+    * Advanced Medical Directive
+    * Life-savings measures intentions
 
 Functionality:  Asset disposition instructions will be disseminated upon one of two types of conditions:
-
 
 
 * Informed Death
@@ -61,7 +59,6 @@ The second type of condition, user inactivity, will initialize asset disposition
 Per Binoy – What will our login mechanism be? We may want to create a smart contract based login mechanism that would validate the login credentials of the user’s confidant. We could store the user data as non-public data elements, but then have a public authentication function for the parties that would need to access the contract corpus when the event planned for occurs.
 
 Functionality Blueprint:
-
 
 
 1. User enters service

@@ -37,8 +37,7 @@ Last Will and Testament:
 * Comprehensive List of Assets, including
     * Cryptocurrency Wallets
     * NFT’s 
-    * Bank Accounts
-    * Investment accounts
+    * Any other non-traditional assets that don't currently offer payable-on-death or beneficiary functionality
 * Comprehensive List of Beneficiaries
     * Instructions for Beneficiaries to establish accounts required to inherit their assets (Wallets that would need to be created to receive their inheritance, for example)
 * Asset Disposition Instructions (which beneficiaries are to be awarded which specific assets)

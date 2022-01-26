@@ -69,12 +69,13 @@ Functionality Blueprint:
 2. User provides comprehensive list of assets to be included in their will, including cryptocurrency wallet addresses, NFT wallet addresses
 3. User provides information for their named confident, and parameters for functionality (i.e., number of days of activity after which asset disposition may be executed)
 4. User provides beneficiary information
+    In the event a beneficiary is a minor, provide guardian information for named minors
 5. User provides Asset Distribution instructions
 6. User provides Healthcare POA, and medical directives
 7. A contract is generated via a .sol file
 8. The contract is maintained and modifyible until either the user’s death or incapacitation
-    1. In the event of the user’s death, the dissemination of asset distribution instructions are provided to the user’s specified confidant, who is either tasked with the execution of the user’s estate, or with providing the distribution instructions to another named estate executor/executrix.
-    2. In the event of user incapacitation, medical directive information is disseminated to the user’s specified healthcare POA.
+    - In the event of the user’s death, the dissemination of asset distribution instructions are provided to the user’s specified confidant, who is tasked with the execution of asset distribution.
+    - In the event of user incapacitation, medical directive information is disseminated to the user’s specified healthcare POA.
 
 
 Coding Requirements

@@ -21,11 +21,11 @@ w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
 def load_contract():
 
     # Load the contract ABI
-    with open(Path('./contracts/compiled/initiator_of_the_will.abi.json')) as f:
+    with open(Path(".\compiled\initiator_of_the_will.abi.json")) as f:
         will_abi = json.load(f)
 
     # Set the contract address (this is the address of the deployed contract)
-    contract_address = os.getenv("SMART_CONTRACT_ADDRESS")
+    contract_address = os.getenv("CONTRACT_ADDRESS")
 
     # Get the contract
     contract = w3.eth.contract(
@@ -51,12 +51,17 @@ ssn = st.text_input("Enter the Social Security Number of the owner of the will")
 dob = st.text_input("Enter the Date of Birth of the owner of the will")
 walletAddress = st.text_input("The Wallet Address of the owner of the will")
 if st.button("Register will"):
-    tx_hash = contract.functions.setStateVar(firstName, lastName, ssn, dob, walletAddress).transact({'from': walletAddress, 'gas': 1000000})
+    tx_hash = contract.functions.setOwnerdata(firstName, lastName, ssn, dob, walletAddress).transact({'from': walletAddress, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
 st.markdown("---")
-
+if st.button("Get Will Owner Data"):
+    tx_hash = contract.functions.getOwner().transact({'from': walletAddress, 'gas': 1000000})
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
+st.markdown("---")
 ################################################################################
 # Display a Token
 ################################################################################

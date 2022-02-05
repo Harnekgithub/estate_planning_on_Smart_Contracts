@@ -57,7 +57,8 @@ ssn = st.text_input("Enter the Social Security Number of the owner of the will f
 dob = st.date_input("Enter the Date of Birth of the owner of the will")
 walletAddress = st.text_input("The Wallet Address of the owner of the will")
 if st.button("Register will"):
-    tx_hash = contract.functions.setOwnerdata(firstName, lastName, str(ssn), str(dob), walletAddress).transact({'from': walletAddress, 'gas': 1000000})
+    tx_hash = contract.functions.setOwnerdata(firstName, lastName, str(ssn), str(dob),
+     walletAddress).transact({'from': walletAddress, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
@@ -81,7 +82,8 @@ b_walletAddress = st.text_input("The Wallet Address of the Beneficiary")
 
 
 if st.button("Register Beneficiary"):
-    tx_hash = contract.functions.setBeneCallInternalFunc(b_firstName, b_lastName, str(b_ssn), str(b_dob), int(b_share), b_walletAddress).transact({'from': walletAddress, 'gas': 1000000})
+    tx_hash = contract.functions.setBeneCallInternalFunc(b_firstName, b_lastName, 
+    str(b_ssn), str(b_dob), int(b_share), b_walletAddress).transact({'from': walletAddress, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
@@ -101,17 +103,18 @@ if st.button("Add Beneficiary to the will"):
     st.markdown("---")
 
 with st.sidebar:
-    _willId = st.text_input("Enter the Will ID")
+    _owillId = st.text_input("Enter the Owner Will ID")
+    #_ossn = st.text_input("Enter the SSN")
     st.markdown("Click on the buttons below to Review Data")
     if st.button("View Will Owner Data"):
-        ownerData = contract.functions.getWill(int(_willId)).call()
+        ownerData = contract.functions.getWill(int(_owillId)).call()
         st.write("Owner Data:")
-        
         st.write(ownerData)
         
  
- 
-    if st.button("View Beneficiaries"):
-        beneData = contract.functions.getBeneficiaries().call()
+    _bwillId = st.text_input("Enter the Beneficiary Will ID")
+    _bssn = st.text_input("Enter the Beneficiary SSN")
+    if st.button("View Beneficiary Info"):
+        beneData = contract.functions.getBeneficiaries(int(_bwillId), _bssn).call()
         st.write("Beneficiary Data:")
         st.write(beneData)

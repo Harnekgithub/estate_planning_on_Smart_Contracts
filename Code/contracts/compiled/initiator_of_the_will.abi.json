@@ -168,45 +168,49 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_willId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_bssn",
+				"type": "string"
+			}
+		],
 		"name": "getBeneficiaries",
 		"outputs": [
 			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "b_firstName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "b_lastName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "b_ssn",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "b_dob",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "b_share",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "b_wallet_address",
-						"type": "address"
-					}
-				],
-				"internalType": "struct owner.beneficiary[]",
-				"name": "",
-				"type": "tuple[]"
+				"internalType": "string",
+				"name": "_fname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_lname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_ssn",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dob",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_share",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_walletAddress",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",

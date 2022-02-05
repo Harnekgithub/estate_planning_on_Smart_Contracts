@@ -2,17 +2,28 @@
 pragma solidity >=0.5.17;
 pragma experimental ABIEncoderV2;
 // import "./will.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/math/SafeMath.sol";
+//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/math/SafeMath.sol";
 
-// compare two strings
-/*library StrLib {
-  function compareTwoStrings(string memory string1, string memory string2) public pure returns (bool)
-  {
-    return keccak256(abi.encodePacked(string1)) == keccak256(abi.encodePacked(string2));
-  }
-}*/
+
 // Create owner of the will
 contract owner {
+    event setOwnerData( uint date, address indexed from );
+    event setBeneficiaryToWill( uint date, address indexed from );
+    event UpdateBeneficiaryShare( uint date, address indexed from );
+    event UpdateBeneficiaryWallet( uint date, address indexed from );
+    event setBeneficiaryData( uint date, address indexed from );
+
+    // Will index initialization
+    //uint256 willId=0;
+    // mapping as struct so that it can be returned back
+
+    struct willMap{
+        uint256 numOfWills;
+        // Create collection on wills        
+        mapping(uint256 => owner_of_the_will) wills;
+    }
+    willMap internal allWills;
+
     // Struct to contain the data of the owner of the will
     struct owner_of_the_will{
         string o_firstName;
@@ -33,10 +44,9 @@ contract owner {
     }
     // Create a list of beneficiaries to add to the will 
     beneficiary[] public beneficiariesOfWill;
-        
-
+    
     // Create the owner struct variable
-    owner_of_the_will internal wOwner;
+    owner_of_the_will public wOwner;
     
     // declare the will owner's address variable as a state variable
     address willOwner;
@@ -47,7 +57,7 @@ contract owner {
     _;
     }
     // constructor for the owner contract
-    constructor() { willOwner = msg.sender;  } 
+    constructor() public { willOwner = msg.sender;  } 
 
     // Get owner data
     function getOwner() public view returns( address )
@@ -69,14 +79,27 @@ contract owner {
         wOwner.o_dob = _dob;
         wOwner.o_wallet_address = _walletAddress;
 
+        // Increment the willId for this will
+        uint256 willId = allWills.numOfWills++;
+        
+        // Create the mappping of numOfWills to the wills
+        allWills.wills[willId] = wOwner;
+        
+        //log the transaction
+        emit setOwnerData(block.timestamp, msg.sender );
     }
        
     // Get owner data
-    function getOwnerData() public view returns(owner_of_the_will memory )
+    function getWillData(uint256 _willId, address _owalletAddress) internal view returns(owner_of_the_will storage )
     {
-        return(wOwner);
+        require(_owalletAddress == allWills.wills[_willId].o_wallet_address, "You are not Authorized to access this account");
+        return(allWills.wills[_willId]);
     }
 
+    // Use this public function to call the Internal function to get the the will
+    function getWill(uint256 _willId, address _owalletAddress) public view returns (owner_of_the_will memory){
+        return(getWillData(_willId, _owalletAddress));
+    }
 
     // This function set the values passed to it in the state variables for the beneficiarOfWill  
     function setBeneficiarydata(string memory _firstName, 
@@ -94,6 +117,7 @@ contract owner {
         _beneficiaries.b_share = _share;
         _beneficiaries.b_wallet_address = _walletAddress;
         beneficiariesOfWill.push(_beneficiaries);
+        emit setBeneficiaryData(block.timestamp, msg.sender );
     }
 
     // Use this public function to call the Internal function to set the beneficiaries in the will
@@ -110,20 +134,43 @@ contract owner {
     function updateOwnersWalletAddress(address _walletAddress) internal onlyOwner{
         owner_of_the_will storage newOwner = wOwner;
         newOwner.o_wallet_address = _walletAddress;
+        emit setBeneficiaryToWill(block.timestamp, msg.sender );
 
     }
     // update will beneficiaries once all the beneficiaries are added to the array
-    function setBeneficiaries_in_wil() internal onlyOwner{
-        owner_of_the_will storage newOwner = wOwner;
-        newOwner.beneficiaries = beneficiariesOfWill;
+    function setBeneficiaries_in_will(uint256 _willId) internal {
+        willMap storage will = allWills;
+        will.wills[_willId].beneficiaries = beneficiariesOfWill;
+        delete beneficiariesOfWill;
     }
     // Use this public function to call the Internal function to set the beneficiaries in the will
-    function setBeneInternalFuncCall() public{
-        setBeneficiaries_in_wil();
-    }    
+    function setBeneInternalFuncCall(uint256 _willId) public {
+        setBeneficiaries_in_will(_willId);
+     }    
     // get all beneficiaries
-    function getBeneficiaries() public view returns(beneficiary[] memory){
-        return(beneficiariesOfWill);
+   /* function getBeneficiaries(uint256 _willId, string memory _ossn) public view returns(beneficiary[] memory){
+        for(uint256 i; i < allWills.wills[_willId].beneficiaries.length; i++){
+            if(compareTwoStrings(allWills.wills[_willId].o_ssn, _ossn)){
+                return(allWills.wills[_willId].beneficiaries);
+            }
+        }*/
+    // get all beneficiaries
+    function getBeneficiaries(uint256 _willId, string memory _bssn) public view returns (string memory _fname, 
+                                     string memory _lname, 
+                                     string memory _ssn, 
+                                     string memory _dob, 
+                                     uint _share, 
+                                     address _walletAddress){
+        for(uint256 i=0; i < allWills.wills[_willId].beneficiaries.length; i++){
+            if(compareTwoStrings(allWills.wills[_willId].beneficiaries[i].b_ssn, _bssn)){
+                return(allWills.wills[_willId].beneficiaries[i].b_firstName,
+                allWills.wills[_willId].beneficiaries[i].b_lastName,
+                allWills.wills[_willId].beneficiaries[i].b_ssn,
+                allWills.wills[_willId].beneficiaries[i].b_dob,
+                allWills.wills[_willId].beneficiaries[i].b_share,
+                allWills.wills[_willId].beneficiaries[i].b_wallet_address);
+            }
+        }        
     }
     // Update a beneficiary's share
     function updateBeneficiaryShare(string memory _ssn, uint _share) public  onlyOwner returns(bool){
@@ -133,6 +180,7 @@ contract owner {
             if(compareTwoStrings(newBenef[i].b_ssn, _ssn))
             {
                 newBenef[i].b_share = _share;
+                emit UpdateBeneficiaryShare(block.timestamp, msg.sender);
                 return true;
             }
         }
@@ -147,6 +195,7 @@ contract owner {
             if(compareTwoStrings(newBenef[i].b_ssn, _ssn))
             {
                 newBenef[i].b_wallet_address = _walletAddress;
+                emit UpdateBeneficiaryWallet(block.timestamp, msg.sender);
                 return true;
             }
         }

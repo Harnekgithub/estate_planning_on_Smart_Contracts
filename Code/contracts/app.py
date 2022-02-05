@@ -1,5 +1,6 @@
 import os
 import json
+from unittest.util import _MAX_LENGTH
 from web3 import Web3
 from pathlib import Path
 from dotenv import load_dotenv
@@ -39,6 +40,11 @@ def load_contract():
 # Load the contract
 contract = load_contract()
 
+accounts = w3.eth.accounts
+_account = st.selectbox("Select Account", options=accounts)
+
+# testing who is the owner
+st.write(contract.functions.getOwner().call())
 
 ################################################################################
 # Register New Artwork
@@ -47,35 +53,65 @@ st.title("New Will")
 #accounts = w3.eth.accounts
 firstName = st.text_input("Enter the First Name of the owner of the will")
 lastName = st.text_input("Enter the Last Name of the owner of the will")
-ssn = st.text_input("Enter the Social Security Number of the owner of the will")
-dob = st.text_input("Enter the Date of Birth of the owner of the will")
+ssn = st.text_input("Enter the Social Security Number of the owner of the will format ", value = "XXX-XX-XXXX", type="password", max_chars=11)
+dob = st.date_input("Enter the Date of Birth of the owner of the will")
 walletAddress = st.text_input("The Wallet Address of the owner of the will")
 if st.button("Register will"):
-    tx_hash = contract.functions.setOwnerdata(firstName, lastName, ssn, dob, walletAddress).transact({'from': walletAddress, 'gas': 1000000})
+    tx_hash = contract.functions.setOwnerdata(firstName, lastName, str(ssn), str(dob), walletAddress).transact({'from': walletAddress, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
 st.markdown("---")
-if st.button("Get Will Owner Data"):
-    tx_hash = contract.functions.getOwner().transact({'from': walletAddress, 'gas': 1000000})
-    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-    st.write("Transaction receipt mined:")
-    st.write(dict(receipt))
-st.markdown("---")
-################################################################################
-# Display a Token
-################################################################################
-#st.markdown("## Display an Art Token")
-#selected_address = st.selectbox("Select Account", options=accounts)
-#tokens = contract.functions.balanceOf(selected_address).call()
-#st.write(f"This address owns {tokens} tokens")
-#token_id = st.selectbox("Artwork Tokens", list(range(tokens)))
-#if st.button("Display"):
-    # Get the art token owner
-#    owner = contract.functions.ownerOf(token_id).call()
-#    st.write(f"The token is registered to {owner}")
 
-    # Get the art token's URI
-#    token_uri = contract.functions.tokenURI(token_id).call()
-#    st.write(f"The tokenURI is {token_uri}")
-#    st.image(token_uri)
+
+
+
+################################################################################
+# Register and Display Beneficiaries
+################################################################################
+
+st.title("Register Beneficiary")
+st.subheader("!! Add all Beneficiaries before adding the list of Beneficiaries to the will !!")
+b_firstName = st.text_input("Enter the First Name of the Beneficiary")
+b_lastName = st.text_input("Enter the Last Name of the Beneficiary")
+b_ssn = st.text_input("Enter the Social Security Number of the Beneficiary ", value = "XXX-XX-XXXX", type="password", max_chars=11)
+b_dob = st.date_input("Enter the Date of Birth of the Beneficiary")
+b_share = st.number_input("Enter the share of the estate", max_value=100)
+b_walletAddress = st.text_input("The Wallet Address of the Beneficiary")
+
+
+if st.button("Register Beneficiary"):
+    tx_hash = contract.functions.setBeneCallInternalFunc(b_firstName, b_lastName, str(b_ssn), str(b_dob), int(b_share), b_walletAddress).transact({'from': walletAddress, 'gas': 1000000})
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
+
+
+st.markdown("---")
+
+# Get the willId to attach the beneificaries list to
+_willId = st.text_input("Enter the Will ID to attach the Beneficiary list")
+if st.button("Add Beneficiary to the will"):
+    tx_hash = contract.functions.setBeneInternalFuncCall(int(_willId)).transact({'from': walletAddress, 'gas': 1000000})
+    st.write(contract.functions.setBeneInternalFuncCall(int(_willId)).call())
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
+    
+    st.markdown("---")
+
+with st.sidebar:
+    _willId = st.text_input("Enter the Will ID")
+    st.markdown("Click on the buttons below to Review Data")
+    if st.button("View Will Owner Data"):
+        ownerData = contract.functions.getWill(int(_willId)).call()
+        st.write("Owner Data:")
+        
+        st.write(ownerData)
+        
+ 
+ 
+    if st.button("View Beneficiaries"):
+        beneData = contract.functions.getBeneficiaries().call()
+        st.write("Beneficiary Data:")
+        st.write(beneData)

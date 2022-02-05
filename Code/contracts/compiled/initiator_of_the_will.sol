@@ -2,7 +2,7 @@
 pragma solidity >=0.5.17;
 pragma experimental ABIEncoderV2;
 // import "./will.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/math/SafeMath.sol";
 
 // compare two strings
 /*library StrLib {
@@ -33,8 +33,7 @@ contract owner {
     }
     // Create a list of beneficiaries to add to the will 
     beneficiary[] public beneficiariesOfWill;
-        //uint numofBefeniciaries;
-
+        
 
     // Create the owner struct variable
     owner_of_the_will internal wOwner;
@@ -48,12 +47,20 @@ contract owner {
     _;
     }
     // constructor for the owner contract
-    constructor() public{
-        willOwner = msg.sender;
-    } 
+    constructor() { willOwner = msg.sender;  } 
+
+    // Get owner data
+    function getOwner() public view returns( address )
+    {
+        return(willOwner);
+    }
     
     // This function set the values passed to it in the state variables for the owner    
-    function setOwnerdata(string memory _firstName, string memory _lastName, string memory _ssn, string memory _dob, address _walletAddress) public 
+    function setOwnerdata(string memory _firstName, 
+                          string memory _lastName, 
+                          string memory _ssn, 
+                          string memory _dob, 
+                          address _walletAddress) public  
     {
       //owner_of_the_will owner;
         wOwner.o_firstName = _firstName;
@@ -63,14 +70,21 @@ contract owner {
         wOwner.o_wallet_address = _walletAddress;
 
     }
+       
     // Get owner data
-    function getOwner() public view returns( owner_of_the_will memory )
+    function getOwnerData() public view returns(owner_of_the_will memory )
     {
         return(wOwner);
     }
+
+
     // This function set the values passed to it in the state variables for the beneficiarOfWill  
-    function setBeneficiarydata(string storage _firstName, string storage _lastName, string storage _ssn, string storage _dob, uint _share, address _walletAddress) 
-    internal onlyOwner
+    function setBeneficiarydata(string memory _firstName, 
+                                string memory _lastName, 
+                                string memory _ssn, 
+                                string memory _dob, 
+                                uint _share, 
+                                address _walletAddress) internal 
     {
         beneficiary memory _beneficiaries;
         _beneficiaries.b_firstName = _firstName;
@@ -81,8 +95,19 @@ contract owner {
         _beneficiaries.b_wallet_address = _walletAddress;
         beneficiariesOfWill.push(_beneficiaries);
     }
+
+    // Use this public function to call the Internal function to set the beneficiaries in the will
+    function setBeneCallInternalFunc(string memory _fname, 
+                                     string memory _lname, 
+                                     string memory _ssn, 
+                                     string memory _dob, 
+                                     uint _share, 
+                                     address _walletAddress) public{
+        setBeneficiarydata(_fname, _lname, _ssn,  _dob, _share, _walletAddress) ;
+    }    
+
     // update will owner's wallet address
-    function updateOwnersWalletAddress(address _walletAddress) public onlyOwner{
+    function updateOwnersWalletAddress(address _walletAddress) internal onlyOwner{
         owner_of_the_will storage newOwner = wOwner;
         newOwner.o_wallet_address = _walletAddress;
 
@@ -91,9 +116,13 @@ contract owner {
     function setBeneficiaries_in_wil() internal onlyOwner{
         owner_of_the_will storage newOwner = wOwner;
         newOwner.beneficiaries = beneficiariesOfWill;
+    }
+    // Use this public function to call the Internal function to set the beneficiaries in the will
+    function setBeneInternalFuncCall() public{
+        setBeneficiaries_in_wil();
     }    
     // get all beneficiaries
-    function getBeneficiaries(address _owner) external returns(beneficiary[] memory){
+    function getBeneficiaries() public view returns(beneficiary[] memory){
         return(beneficiariesOfWill);
     }
     // Update a beneficiary's share
@@ -130,91 +159,3 @@ contract owner {
         return keccak256(abi.encodePacked(string1)) == keccak256(abi.encodePacked(string2));
     }
 }
-/*contract beneficiary{
-    struct beneficiary{
-        string b_firstName;
-        string b_lastName;
-        string b_ssn;
-        string b_dob;
-        uint b_share;
-        address b_wallet_address;
-    }
-    address willOwner;
-    constructor() public{
-        willOwner = msg.sender;
-    }
-    modifier onlyOwner {
-        require(msg.sender == willOwner, "You do not have permission to mint these tokens!");
-        _;
-        }
-    // Declare the beneficiary variable as an array to capture multiple beneficiaries
-    // beneficiary[] public beneficiaries; 
- 
-    
-
-    function setBeneficiarydata(string calldata _firstName, string calldata _lastName, string calldata _ssn, string calldata _dob, uint _share, address _walletAddress) 
-    external onlyOwner
-    {
-        beneficiary memory beneficiaries;
-        beneficiaries.b_firstName = _firstName;
-        beneficiaries.b_lastName = _lastName;
-        beneficiaries.b_ssn = _ssn;
-        beneficiaries.b_dob = _dob;
-        beneficiaries.b_share = _share;
-        beneficiaries.b_wallet_address = _walletAddress;
-        beneficiariesOfWill.push(beneficiaries);
-    }
- 
- 
-}
-
-
-
-contract will {
-        using SafeMath for uint;
- 
-        address owner;
-        constructor () public { //address, uint
-                owner = msg.sender;
-
-        }
-        
-        modifier onlyOwner {
-        require(msg.sender == owner, "You do not have permission to mint these tokens!");
-        _;
-        }
-
-        mapping (address => uint) public beneficiaryMap;
-        mapping ( address => bool) public inserted;
-        address[] public keys;
-
-       // this functions gets the share of the estate a beneficiary will receive when the will is executed by an executor 
-        function get(address _address) public view returns(uint) {
-        //if(msg.sender == _address )
-             return(beneficiaryMap[_address]);
-        }
-        function getSize() external view returns (uint){
-            return keys.length;
-
-        }
-        // this functions sets the share of the estate a beneficiary will receive when the will is executed by an executor 
-       function set(address _keys, uint _share ) internal
-        {
-            beneficiaryMap[_keys] = _share;
-            if(!inserted[_keys])
-            {
-                inserted[_keys] = true;
-                keys.push(_keys);
-            }
-        }
-        // iterate the mapping to get all beneficiaries
-        function getall(uint _i) external view onlyOwner returns(uint)
-        {
-            return(beneficiaryMap[keys[_i]]);
-        }
-        function remove(address _address) public
-        {
-            delete beneficiaryMap[_address];
-        }
-}
-*/

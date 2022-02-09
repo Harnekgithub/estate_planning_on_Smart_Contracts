@@ -1,7 +1,7 @@
 [
 	{
 		"inputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "constructor"
 	},
 	{
@@ -102,6 +102,72 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_execwallet",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_execKey",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_willId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_ownerWallet",
+				"type": "address"
+			}
+		],
+		"name": "assertDeath",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "b_firstName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "b_lastName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "b_ssn",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "b_dob",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b_share",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "b_wallet_address",
+						"type": "address"
+					}
+				],
+				"internalType": "struct cryptoWill.beneficiary[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -135,7 +201,7 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "address",
+				"internalType": "address payable",
 				"name": "b_wallet_address",
 				"type": "address"
 			}
@@ -235,6 +301,11 @@
 				"internalType": "uint256",
 				"name": "_willId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_owalletAddress",
+				"type": "address"
 			}
 		],
 		"name": "getWill",
@@ -294,22 +365,44 @@
 								"type": "uint256"
 							},
 							{
-								"internalType": "address",
+								"internalType": "address payable",
 								"name": "b_wallet_address",
 								"type": "address"
 							}
 						],
-						"internalType": "struct owner.beneficiary[]",
+						"internalType": "struct cryptoWill.beneficiary[]",
 						"name": "beneficiaries",
 						"type": "tuple[]"
+					},
+					{
+						"internalType": "address",
+						"name": "execWallet",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "execKey",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "o_pol",
+						"type": "bool"
 					}
 				],
-				"internalType": "struct owner.owner_of_the_will",
+				"internalType": "struct cryptoWill.owner_of_the_will",
 				"name": "",
 				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "removebeneficiariesOfWill",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -340,7 +433,7 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "address",
+				"internalType": "address payable",
 				"name": "_walletAddress",
 				"type": "address"
 			}
@@ -389,58 +482,20 @@
 				"internalType": "address",
 				"name": "_walletAddress",
 				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_execWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_execKey",
+				"type": "string"
 			}
 		],
 		"name": "setOwnerdata",
 		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_ssn",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_share",
-				"type": "uint256"
-			}
-		],
-		"name": "updateBeneficiaryShare",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_ssn",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "_walletAddress",
-				"type": "address"
-			}
-		],
-		"name": "updateBeneficiaryWallet",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -471,6 +526,34 @@
 			{
 				"internalType": "address",
 				"name": "o_wallet_address",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "execWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "execKey",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "o_pol",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "willOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
 				"type": "address"
 			}
 		],
